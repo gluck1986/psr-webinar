@@ -2,17 +2,16 @@
 /**
  * Created by PhpStorm.
  * User: gluck
- * Date: 30.09.2018
- * Time: 15:46
+ * Date: 02.10.2018
+ * Time: 23:02
  */
-
 namespace App\Http\Router;
 
 use Psr\Http\Message\ServerRequestInterface;
 
 interface RouterInterface
 {
-    public function add(array $methods, $name, $path, $handler, $tokens);
-    public function generate($name, $params): string;
-    public function match(ServerRequestInterface $serverRequest): ServerRequestInterface;
+    public function match(ServerRequestInterface $serverRequest);
+
+    public function add(array $methods, string $name, $path, $handler, $tokens = []);
 }
