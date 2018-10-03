@@ -12,6 +12,6 @@ use Psr\Http\Message\ServerRequestInterface;
 interface RouterInterface
 {
     public function match(ServerRequestInterface $serverRequest);
-
+    public function generate($name, $params): string;
     public function add(array $methods, string $name, $path, $handler, $tokens = []);
 }

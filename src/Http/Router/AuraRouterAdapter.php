@@ -37,6 +37,11 @@ class AuraRouterAdapter implements RouterInterface
         return $serverRequest;
     }
 
+    public function generate($name, $params = []): string
+    {
+        $this->adapter->getGenerator()->generate($name, $params);
+    }
+
     public function add(array $methods, string $name, $path, $handler, $tokens = [])
     {
         $map = $this->adapter->getMap();
