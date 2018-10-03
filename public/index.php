@@ -7,6 +7,9 @@
  */
 declare(strict_types=1);
 
+use App\Http\Handlers\CalcHandler;
+use App\Http\Handlers\IndexHandler;
+use App\Http\Handlers\NotFoundHandler;
 use App\Http\Resolver\Resolver;
 use App\Http\Router\AuraRouterAdapter;
 use App\Http\Router\RouterInterface;
@@ -47,15 +50,14 @@ $pipeline = new \Zend\Stratigility\MiddlewarePipe();
 
 //################### настройка маршрутизатора
 $router = $di->get(RouterInterface::class);
-$router->add(['GET'], 'home','/', $r(function () {
-    return new \Zend\Diactoros\Response\TextResponse('i am a simple home page');
-}));
+$router->add(['GET'], 'home','/', $r(IndexHandler::class));
+$router->add(['GET'], 'calc','/calc/{a}/{b}', $r(CalcHandler::class), ['a'=>'\d+', 'b'=>'\d+']);
 
 //################### получение текущего маршрута
 $serverRequest = $router->match($serverRequest);
 
 //################### получение обработчика маршрута
-$handler = $serverRequest->getAttribute('handler');
+$handler = $serverRequest->getAttribute('handler')?? NotFoundHandler::class;
 
 //################### диспетчерезация
 $pipeline->pipe($r($handler));
