@@ -7,18 +7,37 @@
  */
 declare(strict_types=1);
 
+use Psr\Http\Message\ServerRequestInterface;
+use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
+use Zend\ServiceManager\ServiceManager;
+
+
+
 require '../vendor/autoload.php';
 
 $serverRequest = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
 
-$emitter = new \Narrowspark\HttpEmitter\SapiEmitter();
+$di = new ServiceManager([
+    'abstract_factories'=>[ReflectionBasedAbstractFactory::class],
+    'factories' => [],
+    'services' => []
+]);
 
+
+$pipeline = new \Zend\Stratigility\MiddlewarePipe();
 $router = new \App\Http\Router\AuraRouterAdapter(new \Aura\Router\RouterContainer());
+$resolver = new \App\Http\Resolver\Resolver($di);
 
-$router->add(['GET'], 'page', '/page/{id}', 'handler', ['id'=>'\d+'] );
+/** todo routes */
 
 $serverRequest = $router->match($serverRequest);
 
-$response = new \Zend\Diactoros\Response\TextResponse(print_r($serverRequest->getAttributes(), true));
+$handler = $serverRequest->getAttribute('handler');
+
+$pipeline->pipe($resolver->resolve($handler));
+
+$response = $pipeline->handle($serverRequest);
+
+$emitter = new \Narrowspark\HttpEmitter\SapiEmitter();
 
 $emitter->emit($response);

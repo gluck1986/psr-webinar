@@ -23,6 +23,11 @@ class AuraRouterAdapter implements RouterInterface
         $this->adapter = $routerContainer;
     }
 
+    public function generate($name, $params = []): string
+    {
+        $this->adapter->getGenerator()->generate($name, $params);
+    }
+
     public function match(ServerRequestInterface $serverRequest)
     {
         $route = $this->adapter->getMatcher()->match($serverRequest);
