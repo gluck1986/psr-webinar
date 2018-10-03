@@ -31,7 +31,12 @@ $di = new ServiceManager([
         },
         Resolver::class => function (ContainerInterface $container) {
             return new App\Http\Resolver\Resolver($container);
-        }
+        },
+        \Middlewares\BasicAuthentication::class => function () {
+            return new \Middlewares\BasicAuthentication(['user'=>'1','user1'=>'1']);
+        },
+
+
     ],
     'services' => []
 ]);
@@ -46,11 +51,12 @@ $r = function ($handle) use ($di): MiddlewareInterface {
 //###################  создание и настройка конвеера
 
 $pipeline = new \Zend\Stratigility\MiddlewarePipe();
-
+$pipeline->pipe($r(\Middlewares\ClientIp::class));
+$pipeline->pipe($r(\Middlewares\BasicAuthentication::class));
 
 //################### настройка маршрутизатора
 $router = $di->get(RouterInterface::class);
-$router->add(['GET'], 'home','/', $r(IndexHandler::class));
+$router->add(['GET'], 'home','/', $r([IndexHandler::class]));
 $router->add(['GET'], 'calc','/calc/{a}/{b}', $r(CalcHandler::class), ['a'=>'\d+', 'b'=>'\d+']);
 
 //################### получение текущего маршрута

@@ -10,7 +10,8 @@
     "enalquiler/lazy-middleware": "^2.0",
     "middlewares/http-authentication": "^1.1",
     "zendframework/zend-config-aggregator": "^1.1",
-    "twig/twig": "^2.5"
+    "twig/twig": "^2.5",
+    "middlewares/client-ip": "^1.1"
   },
   "autoload": {
     "psr-4": {

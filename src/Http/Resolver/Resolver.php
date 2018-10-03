@@ -29,7 +29,7 @@ class Resolver
         if (is_array($handler)) {
             $pipe = new MiddlewarePipe();
             return array_reduce($handler,
-                function(MiddlewarePipe $acc, $handler) { $acc->pipe($this->resolve($handler)); },
+                function(MiddlewarePipe $acc, $handler) {$acc->pipe($this->resolve($handler)); return $acc;},
                 $pipe
             );
         } elseif (is_string($handler)) {
