@@ -10,6 +10,7 @@ declare(strict_types=1);
 use App\Http\Handlers\CalcHandler;
 use App\Http\Handlers\IndexHandler;
 use App\Http\Handlers\NotFoundHandler;
+use App\Http\Render\RenderInterface;
 use App\Http\Resolver\Resolver;
 use App\Http\Router\AuraRouterAdapter;
 use App\Http\Router\RouterInterface;
@@ -35,8 +36,12 @@ $di = new ServiceManager([
         \Middlewares\BasicAuthentication::class => function () {
             return new \Middlewares\BasicAuthentication(['user'=>'1','user1'=>'1']);
         },
+        RenderInterface::class => function () {
+            $loader = new Twig_Loader_Filesystem('../templates');
+            $environment =  new Twig_Environment($loader);
 
-
+            return new App\Http\Render\TwigAdapter($environment);
+        }
     ],
     'services' => []
 ]);

@@ -9,19 +9,26 @@ declare(strict_types=1);
 
 namespace App\Http\Handlers;
 
+use App\Http\Render\RenderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\TextResponse;
+use Zend\Diactoros\Response\HtmlResponse;
 
 class IndexHandler implements RequestHandlerInterface
 {
+
+    private $render;
+    public function __construct(RenderInterface $render)
+    {
+        $this->render = $render;
+    }
+
     /**
      * Handle the request and return a response.
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $ip = $request->getAttribute('client-ip');
-        return new TextResponse(print_r($ip, true));
+        return new HtmlResponse($this->render->render('index.twig'));
     }
 }
