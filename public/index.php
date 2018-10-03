@@ -24,26 +24,17 @@ require '../vendor/autoload.php';
 
 $serverRequest = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
 //################### Инициализация, настройка инверсии
+
+$config = (new \Zend\ConfigAggregator\ConfigAggregator([
+    new \Zend\ConfigAggregator\PhpFileProvider('../config/{{,*.}global,{,*.}local}.php')
+]))->getMergedConfig();
+$services = $config['config'] ?? [];
+$config = array_filter($config, function ($key) {return $key != 'config';}, ARRAY_FILTER_USE_KEY);
+
 $di = new ServiceManager([
     'abstract_factories'=>[ReflectionBasedAbstractFactory::class],
-    'factories' => [
-        RouterInterface::class=> function (ContainerInterface $container) {
-            return new AuraRouterAdapter($container->get(RouterContainer::class));
-        },
-        Resolver::class => function (ContainerInterface $container) {
-            return new App\Http\Resolver\Resolver($container);
-        },
-        \Middlewares\BasicAuthentication::class => function () {
-            return new \Middlewares\BasicAuthentication(['user'=>'1','user1'=>'1']);
-        },
-        RenderInterface::class => function () {
-            $loader = new Twig_Loader_Filesystem('../templates');
-            $environment =  new Twig_Environment($loader);
-
-            return new App\Http\Render\TwigAdapter($environment);
-        }
-    ],
-    'services' => []
+    'factories' => $config,
+    'services' => $services
 ]);
 
 //################### лямбда для сокращения кода
